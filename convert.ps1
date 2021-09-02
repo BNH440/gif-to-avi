@@ -4,7 +4,7 @@ if (-NOT $args[0]) {
     Write-Error "No file path provided"
 }
 
-$file = $args[0]
+$file = Get-ChildItem $args[0]
 
 $filePath = Split-Path $file
 
