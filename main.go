@@ -36,7 +36,7 @@ func main() {
 	command := "-stream_loop " + strconv.Itoa(gifRepeat) + " -i " + filePath + " -movflags faststart -pix_fmt yuv420p -filter:v 'setpts=" + strconv.Itoa(gifSpeed) + "*PTS' " + newFilePath
 	// fmt.Println(command)
 	// out, err := exec.Command("powershell", command).Output()
-	// // out, err := exec.Command("./", "hi").Output()
+	// out, err := exec.Command("./", "hi").Output()
 	// if err != nil {
 	// 	log.Fatal(err)
 	// }
@@ -69,29 +69,29 @@ func main() {
 	// 	Write-Host test2;
 	// 	Read-Host -Prompt "Amount of times to repeat the gif (default: 1)"`)
 
-	// 	// 		fmt.Fprintln(stdin, `
-	// 	// 		$ErrorActionPreference = "Stop"
+	// 		fmt.Fprintln(stdin, `
+	// 		$ErrorActionPreference = "Stop"
 
-	// 	// if (-NOT $args[0]) {
-	// 	//     Write-Error "No file path provided"
-	// 	// }
+	// if (-NOT $args[0]) {
+	//     Write-Error "No file path provided"
+	// }
 
-	// 	// $file = Get-ChildItem $args[0]
+	// $file = Get-ChildItem $args[0]
 
-	// 	// $filePath = Split-Path $file
+	// $filePath = Split-Path $file
 
-	// 	// $outputFile = (Join-Path -Path $filePath -ChildPath (([io.path]::GetFileNameWithoutExtension($file)) + ".avi"))
+	// $outputFile = (Join-Path -Path $filePath -ChildPath (([io.path]::GetFileNameWithoutExtension($file)) + ".avi"))
 
-	// 	// $gifRepeat = Read-Host -Prompt "Amount of times to repeat the gif (default: 1)"
+	// $gifRepeat = Read-Host -Prompt "Amount of times to repeat the gif (default: 1)"
 
-	// 	// $gifSpeed = Read-Host -Prompt "Video speed (higher is slower) (default: 1)"
+	// $gifSpeed = Read-Host -Prompt "Video speed (higher is slower) (default: 1)"
 
-	// 	// if (-NOT ([Microsoft.VisualBasic.Information]::IsNumeric($gifRepeat)) -OR -NOT ([Microsoft.VisualBasic.Information]::IsNumeric($gifSpeed))) {
-	// 	//     Write-Error "Non-numeric values"
-	// 	// }
+	// if (-NOT ([Microsoft.VisualBasic.Information]::IsNumeric($gifRepeat)) -OR -NOT ([Microsoft.VisualBasic.Information]::IsNumeric($gifSpeed))) {
+	//     Write-Error "Non-numeric values"
+	// }
 
-	// 	// ./ffmpeg/bin/ffmpeg.exe -stream_loop $gifRepeat -i $file -movflags faststart -pix_fmt yuv420p -vf "scale=trunc(iw/2)*2:trunc(ih/2)*2" -filter:v "setpts=$gifSpeed*PTS" $outputFile
-	// 	// 		`)
+	// ./ffmpeg/bin/ffmpeg.exe -stream_loop $gifRepeat -i $file -movflags faststart -pix_fmt yuv420p -vf "scale=trunc(iw/2)*2:trunc(ih/2)*2" -filter:v "setpts=$gifSpeed*PTS" $outputFile
+	// 		`)
 	// }()
 	// out, err := cmd.CombinedOutput()
 	// if err != nil {
