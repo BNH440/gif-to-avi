@@ -1,11 +1,16 @@
 package main
-// fart
+
 import (
 	"fmt"
 	"log"
 	"os"
-	"os/exec"
+
+	// "os/exec"
+	"path"
 	"strconv"
+	"strings"
+
+	ffmpeg "github.com/u2takey/ffmpeg-go"
 )
 
 func main() {
@@ -16,8 +21,10 @@ func main() {
 
 	filePath := os.Args[1]
 
-	var gifRepeat float32 = 1
-	var gifSpeed float32 = 1
+	newFilePath := strings.TrimSuffix(filePath, path.Ext(filePath))
+
+	var gifRepeat float64 = 1
+	var gifSpeed float64 = 1
 
 	fmt.Print("Amount of times to repeat the gif (default: 1): ")
 	fmt.Scan(&gifRepeat)
@@ -25,11 +32,15 @@ func main() {
 	fmt.Print("Video speed (higher is slower) (default: 1): ")
 	fmt.Scan(&gifSpeed)
 
-	fmt.Println(gifRepeat, gifSpeed)
+	err := ffmpeg.Input(filePath).
+		Output(newFilePath, ffmpeg.KwArgs{"stream_loop": gifRepeat, "movflags": "faststart", "pix_fmt": "yuv420p", "vf": "scale=trunc(iw/2)*2:trunc(ih/2)*2", "filter:v": "setpts=" + strconv.FormatFloat(gifSpeed, 'E', -1, 64) + "*PTS"}).
+		OverWriteOutput().Run().Error()
 
-	cmd := exec.Command("./ffmpeg/bin/ffmpeg.exe", " -stream_loop"+strconv.Itoa(gifRepeat)+"-i $file -movflags faststart -pix_fmt yuv420p -vf \"scale=trunc(iw/2)*2:trunc(ih/2)*2\" -filter:v \"setpts=$gifSpeed*PTS\" $outputFile")
+	fmt.Println(err)
 
-	cmd.Run()
+	// cmd := exec.Command("./ffmpeg/bin/ffmpeg.exe", " -stream_loop"+fmt.Sprintf("%f", gifRepeat)+"-i "+""+" -movflags faststart -pix_fmt yuv420p -vf \"scale=trunc(iw/2)*2:trunc(ih/2)*2\" -filter:v \"setpts=$gifSpeed*PTS\" $outputFile")
+
+	// cmd.Run()
 
 	// cmd := exec.Command("pwsh", "-nologo", "-noprofile")
 	// stdin, err := cmd.StdinPipe()
