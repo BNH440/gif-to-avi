@@ -1,16 +1,14 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"log"
 	"os"
-
-	// "os/exec"
+	"os/exec"
 	"path"
 	"strconv"
 	"strings"
-
-	ffmpeg "github.com/u2takey/ffmpeg-go"
 )
 
 func main() {
@@ -21,22 +19,40 @@ func main() {
 
 	filePath := os.Args[1]
 
-	newFilePath := strings.TrimSuffix(filePath, path.Ext(filePath))
-
-	var gifRepeat float64 = 1
-	var gifSpeed float64 = 1
+	newFilePath := strings.TrimSuffix(filePath, path.Ext(filePath)) + ".avi"
+	fmt.Println(newFilePath)
+	var gifRepeat int = 1
+	var gifSpeed int = 1
 
 	fmt.Print("Amount of times to repeat the gif (default: 1): ")
-	fmt.Scan(&gifRepeat)
+	fmt.Scanln(&gifRepeat)
 
 	fmt.Print("Video speed (higher is slower) (default: 1): ")
-	fmt.Scan(&gifSpeed)
+	fmt.Scanln(&gifSpeed)
 
-	err := ffmpeg.Input(filePath).
-		Output(newFilePath, ffmpeg.KwArgs{"stream_loop": gifRepeat, "movflags": "faststart", "pix_fmt": "yuv420p", "vf": "scale=trunc(iw/2)*2:trunc(ih/2)*2", "filter:v": "setpts=" + strconv.FormatFloat(gifSpeed, 'E', -1, 64) + "*PTS"}).
-		OverWriteOutput().Run().Error()
+	// err := ffmpeg.Input(filePath, ffmpeg.KwArgs{"stream_loop": gifRepeat}).
+	// 	Output(newFilePath, ffmpeg.KwArgs{"movflags": "faststart", "pix_fmt": "yuv420p", "vf": "scale=trunc(iw/2)*2:trunc(ih/2)*2", "filter:v": "setpts=" + strconv.FormatFloat(gifSpeed, 'E', -1, 64) + "*PTS"}).
+	// 	OverWriteOutput().Run()
+	command := "-stream_loop " + strconv.Itoa(gifRepeat) + " -i " + filePath + " -movflags faststart -pix_fmt yuv420p -filter:v 'setpts=" + strconv.Itoa(gifSpeed) + "*PTS' " + newFilePath
+	// fmt.Println(command)
+	// out, err := exec.Command("powershell", command).Output()
+	// // out, err := exec.Command("./", "hi").Output()
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+	// fmt.Printf("%s\n%s\n", out, err)
 
-	fmt.Println(err)
+	cmd := exec.Command("./ffmpeg/bin/ffmpeg.exe", command)
+	var out bytes.Buffer
+	var stderr bytes.Buffer
+	cmd.Stdout = &out
+	cmd.Stderr = &stderr
+	err := cmd.Run()
+	if err != nil {
+		fmt.Println(fmt.Sprint(err) + ": " + stderr.String())
+		return
+	}
+	fmt.Println("Result: " + out.String())
 
 	// cmd := exec.Command("./ffmpeg/bin/ffmpeg.exe", " -stream_loop"+fmt.Sprintf("%f", gifRepeat)+"-i "+""+" -movflags faststart -pix_fmt yuv420p -vf \"scale=trunc(iw/2)*2:trunc(ih/2)*2\" -filter:v \"setpts=$gifSpeed*PTS\" $outputFile")
 
