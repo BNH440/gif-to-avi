@@ -1,3 +1,4 @@
 *.exe
 *.avi
 *.gif
+ffmpeg.go

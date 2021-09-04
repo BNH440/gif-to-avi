@@ -11,18 +11,51 @@ import (
 	"strings"
 )
 
+func getffmpeg() {
+	// Get OS Cache
+	cachedir, err := os.UserCacheDir()
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Retrieve exe from the go file
+	data, err := Asset("ffmpeg/ffmpeg.exe")
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Write the exe to cache
+	os.WriteFile(path.Join(cachedir, "ffmpeg.exe"), data, 0644)
+}
+
 func main() {
+	// Get OS Cache
+	cachedir, err := os.UserCacheDir()
+
+	// FFmpeg location
+	ffmpegLoc := path.Join(cachedir, "ffmpeg.exe")
+
+	if _, err := os.Stat(ffmpegLoc); os.IsNotExist(err) {
+		fmt.Println("Cache file does not exist, creating...")
+		getffmpeg()
+	}
+
 	// Terminate if argument is not given
 	if len(os.Args) != 2 {
 		log.Fatal("Error: You must provide a file to convert")
 	}
 
+	// Get filepath from the program startup arguments
 	filePath := os.Args[1]
 
+	// Make the new filepath identical to the old one but with .avi instead of the previous extension
 	newFilePath := strings.TrimSuffix(filePath, path.Ext(filePath)) + ".avi"
-	fmt.Println(newFilePath)
+
+	// Set default values of 1
 	var gifRepeat int = 1
-	var gifSpeed int = 1
+	var gifSpeed string = "1.00"
 
 	fmt.Print("Amount of times to repeat the gif (default: 1): ")
 	fmt.Scanln(&gifRepeat)
@@ -30,72 +63,24 @@ func main() {
 	fmt.Print("Video speed (higher is slower) (default: 1): ")
 	fmt.Scanln(&gifSpeed)
 
-	// err := ffmpeg.Input(filePath, ffmpeg.KwArgs{"stream_loop": gifRepeat}).
-	// 	Output(newFilePath, ffmpeg.KwArgs{"movflags": "faststart", "pix_fmt": "yuv420p", "vf": "scale=trunc(iw/2)*2:trunc(ih/2)*2", "filter:v": "setpts=" + strconv.FormatFloat(gifSpeed, 'E', -1, 64) + "*PTS"}).
-	// 	OverWriteOutput().Run()
-	command := "-stream_loop " + strconv.Itoa(gifRepeat) + " -i " + filePath + " -movflags faststart -pix_fmt yuv420p -filter:v 'setpts=" + strconv.Itoa(gifSpeed) + "*PTS' " + newFilePath
-	// fmt.Println(command)
-	// out, err := exec.Command("powershell", command).Output()
-	// out, err := exec.Command("./", "hi").Output()
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-	// fmt.Printf("%s\n%s\n", out, err)
-
-	cmd := exec.Command("./ffmpeg/bin/ffmpeg.exe", command)
+	fmt.Println("Starting Conversion...")
+	command := strings.Fields(ffmpegLoc + " -y -stream_loop " + strconv.Itoa(gifRepeat) + " -i " + filePath + " -movflags faststart -pix_fmt yuv420p -vf setpts=" + gifSpeed + "*PTS " + newFilePath)
+	cmd := exec.Command(command[0], command[1:]...)
 	var out bytes.Buffer
 	var stderr bytes.Buffer
 	cmd.Stdout = &out
 	cmd.Stderr = &stderr
-	err := cmd.Run()
-	if err != nil {
+	cmderror := cmd.Run()
+	if cmderror != nil {
 		fmt.Println(fmt.Sprint(err) + ": " + stderr.String())
+		os.Remove(newFilePath)
 		return
 	}
-	fmt.Println("Result: " + out.String())
+	fmt.Println("Conversion Complete! File located at: " + newFilePath)
 
-	// cmd := exec.Command("./ffmpeg/bin/ffmpeg.exe", " -stream_loop"+fmt.Sprintf("%f", gifRepeat)+"-i "+""+" -movflags faststart -pix_fmt yuv420p -vf \"scale=trunc(iw/2)*2:trunc(ih/2)*2\" -filter:v \"setpts=$gifSpeed*PTS\" $outputFile")
+	// errorf := ffmpeg_go.Input(filePath, ffmpeg_go.KwArgs{"stream_loop": strconv.Itoa(gifRepeat)}).
+	// 	Output(newFilePath, ffmpeg_go.KwArgs{"movflags": "faststart", "pix_fmt": "yuv420p", "vf": "setpts=" + strconv.Itoa(gifSpeed) + "*PTS "}).
+	// 	OverWriteOutput().Run().Error()
 
-	// cmd.Run()
-
-	// cmd := exec.Command("pwsh", "-nologo", "-noprofile")
-	// stdin, err := cmd.StdinPipe()
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-	// go func() {
-	// 	defer stdin.Close()
-	// 	fmt.Fprintln(stdin, `Write-Host test1;
-	// 	Write-Host test2;
-	// 	Read-Host -Prompt "Amount of times to repeat the gif (default: 1)"`)
-
-	// 		fmt.Fprintln(stdin, `
-	// 		$ErrorActionPreference = "Stop"
-
-	// if (-NOT $args[0]) {
-	//     Write-Error "No file path provided"
-	// }
-
-	// $file = Get-ChildItem $args[0]
-
-	// $filePath = Split-Path $file
-
-	// $outputFile = (Join-Path -Path $filePath -ChildPath (([io.path]::GetFileNameWithoutExtension($file)) + ".avi"))
-
-	// $gifRepeat = Read-Host -Prompt "Amount of times to repeat the gif (default: 1)"
-
-	// $gifSpeed = Read-Host -Prompt "Video speed (higher is slower) (default: 1)"
-
-	// if (-NOT ([Microsoft.VisualBasic.Information]::IsNumeric($gifRepeat)) -OR -NOT ([Microsoft.VisualBasic.Information]::IsNumeric($gifSpeed))) {
-	//     Write-Error "Non-numeric values"
-	// }
-
-	// ./ffmpeg/bin/ffmpeg.exe -stream_loop $gifRepeat -i $file -movflags faststart -pix_fmt yuv420p -vf "scale=trunc(iw/2)*2:trunc(ih/2)*2" -filter:v "setpts=$gifSpeed*PTS" $outputFile
-	// 		`)
-	// }()
-	// out, err := cmd.CombinedOutput()
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-	// fmt.Printf("%s\n", out)
+	// fmt.Println(errorf)
 }
