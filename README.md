@@ -1,5 +1,7 @@
 # gif-to-avi
 
+This Program tunrs gif files into avi's using ffmpeg and go.
+
 ## Commands
 
 `ffmpeg -stream_loop 15 -i file.gif -movflags faststart -pix_fmt yuv420p -vf "scale=trunc(iw/2)*2:trunc(ih/2)*2" -filter:v "setpts=4*PTS" file.avi`
