@@ -12,13 +12,6 @@ import (
 )
 
 func getffmpeg() {
-	// Get OS Cache
-	// cachedir, err := os.UserCacheDir()
-
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-
 	// Retrieve exe from the go file
 	data, err := Asset("ffmpeg/ffmpeg.exe")
 
@@ -77,10 +70,4 @@ func main() {
 		return
 	}
 	fmt.Println("Conversion Complete! File located at: " + newFilePath)
-
-	// errorf := ffmpeg_go.Input(filePath, ffmpeg_go.KwArgs{"stream_loop": strconv.Itoa(gifRepeat)}).
-	// 	Output(newFilePath, ffmpeg_go.KwArgs{"movflags": "faststart", "pix_fmt": "yuv420p", "vf": "setpts=" + strconv.Itoa(gifSpeed) + "*PTS "}).
-	// 	OverWriteOutput().Run().Error()
-
-	// fmt.Println(errorf)
 }
