@@ -13,11 +13,11 @@ import (
 
 func getffmpeg() {
 	// Get OS Cache
-	cachedir, err := os.UserCacheDir()
+	// cachedir, err := os.UserCacheDir()
 
-	if err != nil {
-		log.Fatal(err)
-	}
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
 
 	// Retrieve exe from the go file
 	data, err := Asset("ffmpeg/ffmpeg.exe")
@@ -27,7 +27,7 @@ func getffmpeg() {
 	}
 
 	// Write the exe to cache
-	os.WriteFile(path.Join(cachedir, "ffmpeg.exe"), data, 0644)
+	os.WriteFile("./ffmpeg.exe", data, 0644)
 }
 
 func main() {
