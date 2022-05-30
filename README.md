@@ -1,6 +1,6 @@
 # Gif To Avi
 
-This Program tunrs gif files into avi's using ffmpeg and go.
+A program that converts gif files into avi's using ffmpeg and go.
 
 ## Commands
 
